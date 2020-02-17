@@ -1,12 +1,8 @@
 package model.logic;
 
 import model.data_structures.ArregloDinamico;
-import model.data_structures.Cola;
 import model.data_structures.Comparendo;
 import model.data_structures.IArregloDinamico;
-import model.data_structures.ICola;
-import model.data_structures.IPila;
-import model.data_structures.Pila;
 
 /**
  * Definicion del modelo del mundo
@@ -16,43 +12,29 @@ public class Modelo {
 	/**
 	 * Atributos del modelo del mundo
 	 */
-	private IPila<Comparendo> datos;
-	private ICola<Comparendo> datos1;
+	// La estructura de datos que se utilizará en este proyecto es el ARREGLO DINÁMICO
+	private IArregloDinamico<Comparendo> comps;
 	private GeoJSONProcessing objetoJsonGson;
+	private boolean cargado;
 
 	/**
 	 * Constructor del modelo del mundo con capacidad predefinida
 	 */
 	public Modelo()
 	{
-		datos = new Pila<Comparendo>(600000);
-		datos1 = new Cola<Comparendo>(600000);
+		comps = new ArregloDinamico<Comparendo>(600000);
 		objetoJsonGson = new GeoJSONProcessing();
+		cargado = false;
 	}
-
-	/**
-	 * Servicio de consulta de numero de elementos presentes en el modelo 
-	 * @return numero de elementos presentes en el modelo
-	 */
-	public int darTamanoPila()
-	{
-		return datos.consultarTamano();
-	}
-
-	public int darTamanoCola(){
-
-		return datos1.consultarTam();
-	}
-
 
 	/**
 	 * Requerimiento buscar dato
 	 * @param dato Dato a buscar
 	 * @return dato encontrado
 	 */
-	public String buscar(String dato)
+	public Comparendo buscar(Comparendo dato)
 	{
-		return null;
+		return comps.buscar(dato);
 	}
 
 	/**
@@ -60,9 +42,9 @@ public class Modelo {
 	 * @param dato Dato a eliminar
 	 * @return dato eliminado
 	 */
-	public String eliminar(String dato)
+	public Comparendo eliminar(Comparendo dato)
 	{
-		return null;
+		return comps.eliminar(dato);
 	}
 
 	public String darElemento(int numero){
@@ -70,86 +52,16 @@ public class Modelo {
 
 	}
 
-	public void cargar(){
+	public String cargar(){
 
-		objetoJsonGson.cargarDatos(datos, datos1);
-	}
-
-	public IPila<Comparendo> darPila(){
-
-		return datos;
-	}
-
-	public ICola<Comparendo> darCola(){
-
-		return datos1;
-	}
-
-
-	public ICola<Comparendo> clusterMasGrandeCola(){
-
-		int grupoMasGrande = 0;
-		ICola<Comparendo> colaMasGrande = null;
-
-		for(int i =0; i<datos1.consultarTam(); i++){
-
-			ICola<Comparendo> variableTemporal = new Cola<Comparendo>(600000);
-			variableTemporal.enqueue(datos1.darElementoEspecifico(i));
-
-			boolean continuar = true;
-			for(int j = i+1; j<datos1.consultarTam() && continuar==true; j++ ){
-				if(datos1.darElementoEspecifico(i).compareTo(datos1.darElementoEspecifico(j))==0){
-
-					variableTemporal.enqueue(datos1.darElementoEspecifico(j));
-					i = j;
-
-				}
-
-				else{
-					continuar = false;
-					
-
-				}
-			}
-			if(variableTemporal.consultarTam()>grupoMasGrande){
-				colaMasGrande = variableTemporal;
-				grupoMasGrande = variableTemporal.consultarTam();
-
-			}
-
-		}
-		datos1.vaciarCola();
-		return colaMasGrande;
+		return objetoJsonGson.cargarDatos(comps);
 
 	}
 
-	public IPila<Comparendo> ultimosNComparendos(int numComps, String codInfrac){
 
-		int conteo = 0;
-		IPila<Comparendo> PilaResultado = null;
-		IPila<Comparendo> variableTemporal = new Pila<Comparendo>(600000);
-		for(int i= datos.consultarTamano()-1 ; i>=0 && conteo<numComps; i--){
-			if(datos.darElementoEspecifico(i).INFRACCION.compareTo(codInfrac)==0){
+	public IArregloDinamico<Comparendo> darArreglo(){
 
-				variableTemporal.push(datos.darElementoEspecifico(i));
-				conteo++;
-			}
-
-			datos.pop();
-		}
-		if(variableTemporal.consultarTamano()>0){
-			PilaResultado = variableTemporal;
-		}
-
-		return PilaResultado;
-
+		return comps;
 	}
 
-	public String RetornarDatos(Comparendo comp){
-		//INFRACCION, OBJECTID,
-		//FECHA_HORA, CLASE_VEHI, TIPO_SERVI, LOCALIDAD.
-		String rta = "Codigo de infraccion: "+comp.INFRACCION +" ObjectID: " + comp.OBJECTID + " Fecha y hora: " + comp.FECHA_HORA + " Clase de vehiculo "+comp.CLASE_VEHI + " Tipo de servicio: " +
-				comp.TIPO_SERVI + " Localidad: "+ comp.LOCALIDAD;
-		return rta;
-	}
 }
