@@ -38,6 +38,84 @@ public class GeoJSONProcessing {
 		String rta = null;
 		JsonReader reader;
 		try {
+			reader = new JsonReader(new FileReader(PATH2));
+			JsonElement elem = JsonParser.parseReader(reader);
+			JsonArray e2 = elem.getAsJsonObject().get("features").getAsJsonArray();
+			int objectIDMayor = 0;
+			double mayorLatitud = 2;
+			double mayorLongitud = -76;
+			double menorLatitud = 6;
+			double menorLongitud = -72;
+
+			Comparendo mayor = null;
+
+
+			SimpleDateFormat parser=new SimpleDateFormat("yyyy/MM/dd");
+
+			for(JsonElement e: e2) {
+				Comparendo c = new Comparendo();
+				c.OBJECTID = e.getAsJsonObject().get("properties").getAsJsonObject().get("OBJECTID").getAsInt();
+
+				String s = e.getAsJsonObject().get("properties").getAsJsonObject().get("FECHA_HORA").getAsString();	
+				c.FECHA_HORA = parser.parse(s); 
+
+				c.MEDIO_DETE = e.getAsJsonObject().get("properties").getAsJsonObject().get("MEDIO_DETE").getAsString();
+				c.CLASE_VEHI = e.getAsJsonObject().get("properties").getAsJsonObject().get("CLASE_VEHI").getAsString();
+				c.TIPO_SERVI = e.getAsJsonObject().get("properties").getAsJsonObject().get("TIPO_SERVI").getAsString();
+				c.INFRACCION = e.getAsJsonObject().get("properties").getAsJsonObject().get("INFRACCION").getAsString();
+				c.DES_INFRAC = e.getAsJsonObject().get("properties").getAsJsonObject().get("DES_INFRAC").getAsString();	
+				c.LOCALIDAD = e.getAsJsonObject().get("properties").getAsJsonObject().get("LOCALIDAD").getAsString();
+
+				c.longitud = e.getAsJsonObject().get("geometry").getAsJsonObject().get("coordinates").getAsJsonArray()
+						.get(0).getAsDouble();
+
+				c.latitud = e.getAsJsonObject().get("geometry").getAsJsonObject().get("coordinates").getAsJsonArray()
+						.get(1).getAsDouble();
+
+				pComp.agregar(c);
+				if(c.OBJECTID>objectIDMayor){
+					objectIDMayor = c.OBJECTID;
+					mayor = c;
+				}
+				if(c.latitud>mayorLatitud){
+					mayorLatitud = c.latitud;
+				}
+				if(c.latitud<menorLatitud){
+					menorLatitud = c.latitud;
+				}
+				if(c.longitud>mayorLongitud){
+					mayorLongitud = c.longitud;
+				}
+				if(c.longitud<menorLongitud){
+					menorLongitud = c.longitud;
+				}
+
+
+			}
+
+			rta = "El total de comparendos en el arhivo es " + pComp.darTamano() + "\n" 
+					+ "El comparendo con el mayor ObjectID encontrado es:\n-" + RetornarDatos(mayor) + 
+					"\n" + "La zona Minimax del archivo es: \n" +
+					"-Menor Latitud: " + menorLatitud + "                     -Menor Longitud: " + menorLongitud +"\n" +
+					"-Mayor Latitud: " + mayorLatitud + "                     -Mayor Longitud: " + mayorLongitud +"\n";
+
+		} catch (FileNotFoundException | ParseException e) {
+
+			e.printStackTrace();
+			rta = "No se pudo encontrar el archivo de comparendos";
+		}
+
+		return rta;	
+
+
+	}
+	
+	// Este metodo es exclusivo para comprobar que la carga funciona de forma correcta en las pruebas
+	public String cargarDatosPequenos(IArregloDinamico<Comparendo> pComp){
+
+		String rta = null;
+		JsonReader reader;
+		try {
 			reader = new JsonReader(new FileReader(PATH));
 			JsonElement elem = JsonParser.parseReader(reader);
 			JsonArray e2 = elem.getAsJsonObject().get("features").getAsJsonArray();

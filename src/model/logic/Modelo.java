@@ -47,8 +47,8 @@ public class Modelo {
 		return comps.eliminar(dato);
 	}
 
-	public String darElemento(int numero){
-		return null;
+	public Comparendo darElemento(int numero){
+		return comps.darElemento(numero);
 
 	}
 
@@ -56,6 +56,12 @@ public class Modelo {
 
 		return objetoJsonGson.cargarDatos(comps);
 
+	}
+	
+	// Este metodo es exclusivo para comprobar que la carga funciona de forma correcta en las pruebas
+	public String cargarDatosPequenos(){
+		
+		return objetoJsonGson.cargarDatosPequenos(comps);
 	}
 
 

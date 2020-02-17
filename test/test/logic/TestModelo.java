@@ -23,47 +23,54 @@ public class TestModelo {
 
 	public void setUp2() {
 
-		modelo.cargar();
 		Comparendo comp = new Comparendo();
 		comp.INFRACCION = "Prueba Infraccion";
-		modelo.darPila().push(comp);
-		modelo.darCola().enqueue(comp);
+		for(int i = 0; i<20; i++){
+			modelo.darArreglo().agregar(comp);
+		}
+
 
 	}
 
 	public void setUp3() {
 
-		modelo.cargar();
-		for(int i = 0; i< 8; i++){
-			Comparendo comp = new Comparendo();
-			comp.INFRACCION = "Prueba Infraccion";
-			modelo.darPila().push(comp);
-			modelo.darCola().enqueue(comp);
-		}
-
+		Comparendo comp = new Comparendo();
+		comp.CLASE_VEHI = "Carro prueba";
+		modelo.darArreglo().agregar(comp);
+		Comparendo comp2 = new Comparendo();
+		comp2.CLASE_VEHI = "Carro prueba 2";
+		modelo.darArreglo().agregar(comp2);
 	}
 
 
 
 	@Test
-	public void testClusterMasGrande() {
-
-		setUp1();
-		setUp3();
-		ICola<Comparendo> col = modelo.clusterMasGrandeCola();
-		assertEquals(8, col.consultarTam());
-
-	}
-
-	@Test
-	public void testUltimosNComparendos() {
+	public void testAgregar(){
 
 		setUp1();
 		setUp2();
-		IPila<Comparendo> pil = modelo.ultimosNComparendos(1, "Prueba Infraccion");
-		assertEquals(1, pil.consultarTamano());
+		assertEquals(20, modelo.darArreglo().darTamano());
+		assertEquals("Prueba Infraccion", modelo.darArreglo().darElemento(15).INFRACCION);
+
+	}
+
+	@Test
+	public void testDatosDatosGuardadosCorrectamente() {
+
+		setUp1();
+		setUp3();
+		assertEquals("Carro prueba", modelo.darArreglo().darElemento(0).CLASE_VEHI);
+		assertEquals("Carro prueba 2", modelo.darArreglo().darElemento(1).CLASE_VEHI);
 
 
+	}
+	@Test
+	public void testCargar(){
+
+		setUp1();
+		modelo.cargarDatosPequenos();
+		assertEquals(20, modelo.darArreglo().darTamano());
+		assertEquals(29042, modelo.darArreglo().darElemento(0).OBJECTID);
 	}
 
 }
