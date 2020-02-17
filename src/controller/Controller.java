@@ -14,6 +14,8 @@ public class Controller {
 	private View view;
 
 	private boolean cargado;
+	public static String PATH = "./data/comparendos_dei_2018_small.geojson";
+	public static String PATH2 = "./data/comparendos_dei_2018.geojson";
 
 	/**
 	 * Crear la vista y el modelo del proyecto
@@ -42,7 +44,7 @@ public class Controller {
 					modelo = new Modelo();
 
 					long start = System.currentTimeMillis();
-					String rta = modelo.cargar();
+					String rta = modelo.cargar(PATH2);
 					long end = System.currentTimeMillis();
 
 					view.printMessage("Tiempo de carga (s): " + (end-start)/1000.0);

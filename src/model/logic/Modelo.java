@@ -15,7 +15,6 @@ public class Modelo {
 	// La estructura de datos que se utilizará en este proyecto es el ARREGLO DINÁMICO
 	private IArregloDinamico<Comparendo> comps;
 	private GeoJSONProcessing objetoJsonGson;
-	private boolean cargado;
 
 	/**
 	 * Constructor del modelo del mundo con capacidad predefinida
@@ -24,7 +23,6 @@ public class Modelo {
 	{
 		comps = new ArregloDinamico<Comparendo>(600000);
 		objetoJsonGson = new GeoJSONProcessing();
-		cargado = false;
 	}
 
 	/**
@@ -52,18 +50,11 @@ public class Modelo {
 
 	}
 
-	public String cargar(){
+	public String cargar(String direccion){
 
-		return objetoJsonGson.cargarDatos(comps);
+		return objetoJsonGson.cargarDatos(comps, direccion);
 
 	}
-	
-	// Este metodo es exclusivo para comprobar que la carga funciona de forma correcta en las pruebas
-	public String cargarDatosPequenos(){
-		
-		return objetoJsonGson.cargarDatosPequenos(comps);
-	}
-
 
 	public IArregloDinamico<Comparendo> darArreglo(){
 

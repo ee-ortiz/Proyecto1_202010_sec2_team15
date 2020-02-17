@@ -13,6 +13,7 @@ import org.junit.Test;
 public class TestModelo {
 
 	private Modelo modelo;
+	public static String PATH = "./data/comparendos_dei_2018_small.geojson";
 
 	@Before
 	public void setUp1() {
@@ -68,7 +69,7 @@ public class TestModelo {
 	public void testCargar(){
 
 		setUp1();
-		modelo.cargarDatosPequenos();
+		modelo.cargar(PATH);
 		assertEquals(20, modelo.darArreglo().darTamano());
 		assertEquals(29042, modelo.darArreglo().darElemento(0).OBJECTID);
 	}
