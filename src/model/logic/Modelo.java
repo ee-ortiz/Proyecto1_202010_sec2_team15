@@ -238,6 +238,28 @@ public class Modelo {
 			
 		}
 	}
+	
+	/*
+	 * si es null no se encontro, sino si
+	 */
+	public String requerimiento1EstudianteB(String pInfraccion)
+	{
+		
+		//organizar con merge sort con base en c
+		Comparendo ComparendoRetornar=null;
+		boolean encontrado= false;
+		int i=0;
+		while( i<comps.darTamano())
+		{
+			if(comps.darElemento(i).INFRACCION.equals(pInfraccion))
+			{
+				return ComparendoRetornar.INFRACCION;
+			}
+			i++;
+		}
+		return ComparendoRetornar.INFRACCION;
+		
+	}
 
 }
 
