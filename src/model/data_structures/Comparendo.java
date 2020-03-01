@@ -1,5 +1,6 @@
 package model.data_structures;
 
+import java.util.Comparator;
 import java.util.Date;
 
 public class Comparendo implements Comparable<Comparendo> {
@@ -29,5 +30,12 @@ public class Comparendo implements Comparable<Comparendo> {
 
 		return INFRACCION.compareTo(comp.INFRACCION);
 
+	}
+
+	public static class ComparadorXCodigoInfraccion implements Comparator<Comparendo> {
+
+		public int compare(Comparendo c1, Comparendo c2) {
+			return c1.INFRACCION.compareTo(c2.INFRACCION);
+		}
 	}
 }

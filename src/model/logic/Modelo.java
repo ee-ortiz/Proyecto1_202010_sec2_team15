@@ -2,9 +2,12 @@ package model.logic;
 
 import model.data_structures.ArregloDinamico;
 import model.data_structures.Comparendo;
+import model.data_structures.Comparendo.ComparadorXCodigoInfraccion;
 import model.data_structures.IArregloDinamico;
 
 import java.util.Random;
+import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Definicion del modelo del mundo
@@ -77,6 +80,19 @@ public class Modelo {
 		int i = 0;
 		while(i < comps.darTamano()){
 			rta[i] = comps.darElemento(i);
+			i++;
+		}
+
+		return rta;
+
+	}
+
+	public Comparable[] copiarArreglo(IArregloDinamico<Comparendo> pComps){
+
+		Comparable[] rta = new Comparable[pComps.darTamano()];
+		int i = 0;
+		while(i < pComps.darTamano()){
+			rta[i] = pComps.darElemento(i);
 			i++;
 		}
 
@@ -184,22 +200,22 @@ public class Modelo {
 	/*
 	 * paso 2 algoritmo mergeSort
 	 */
-	private static void sortParaMergeSort(Comparable[] a, Comparable[] aux, int lo, int hi)
+	private static void sortParaMergeSort(Comparable[] a, Comparable[] aux, int lo, int hi, String orden, Comparator<Comparendo> comparador)
 	{
 		if (hi <= lo) return;
 		int mid = lo + (hi - lo) / 2;
-		sortParaMergeSort(a, aux, lo, mid);
-		sortParaMergeSort(a, aux, mid+1, hi);
-		merge(a, aux, lo, mid, hi);
+		sortParaMergeSort(a, aux, lo, mid, orden, comparador);
+		sortParaMergeSort(a, aux, mid+1, hi, orden, comparador);
+		merge(a, aux, lo, mid, hi, orden, comparador);
 	}
 
 	/*
 	 *  aqui inicia el algoritmo mergeSort sacado del libro algorithms 4 edicion
 	 */
-	public static void sortParaMerge(Comparable[] a)
+	public static void sortParaMerge(Comparable[] a, String orden, Comparator<Comparendo> comparador)
 	{
 		Comparable[] aux = new Comparable[a.length];
-		sortParaMergeSort(a, aux, 0, a.length - 1);
+		sortParaMergeSort(a, aux, 0, a.length - 1, orden, comparador);
 	}
 
 
@@ -207,18 +223,52 @@ public class Modelo {
 	/*
 	 * ultimo paso
 	 */
-	private static void merge(Comparable[] a, Comparable[] aux, int lo, int mid, int hi)
+	private static void merge(Comparable[] a, Comparable[] aux, int lo, int mid, int hi, String orden, Comparator<Comparendo> comparador )
 	{
 		for (int k = lo; k <= hi; k++)
 			aux[k] = a[k];
 		int i = lo, j = mid+1;
 		for (int k = lo; k <= hi; k++)
 		{
-			if (i > mid) a[k] = aux[j++];
-			else if (j > hi) a[k] = aux[i++];
-			else if (less(aux[j], aux[i])) //si izquierda menor true
-			{ a[k] = aux[j++];}
-			else a[k] = aux[i++];
+			if(comparador==null){
+
+				if(orden.equalsIgnoreCase("descendente")){
+					if (i > mid) a[k] = aux[j++];
+					else if (j > hi) a[k] = aux[i++];
+					else if (less(aux[j], aux[i])) //si izquierda menor true
+					{ a[k] = aux[j++];}
+					else a[k] = aux[i++];
+				}
+
+				if(orden.equalsIgnoreCase("ascendente")){
+					if (i > mid) a[k] = aux[j++];
+					else if (j > hi) a[k] = aux[i++];
+					else if (!less(aux[j], aux[i])) //si izquierda no es menor true
+					{ a[k] = aux[j++];}
+					else a[k] = aux[i++];
+				}
+			}
+
+			else{
+
+				if(orden.equalsIgnoreCase("descendente")){
+					if (i > mid) a[k] = aux[j++];
+					else if (j > hi) a[k] = aux[i++];
+					else if (comparador.compare(cambiarDeComparableAComparendo(aux[j]) , cambiarDeComparableAComparendo(aux[i]) )<0) //si izquierda menor true
+					{ a[k] = aux[j++];}
+					else a[k] = aux[i++];
+				}
+
+				if(orden.equalsIgnoreCase("ascendente")){
+					if (i > mid) a[k] = aux[j++];
+					else if (j > hi) a[k] = aux[i++];
+					else if (comparador.compare(cambiarDeComparableAComparendo(aux[j]) , cambiarDeComparableAComparendo(aux[i]) )>=0) //si izquierda no es menor true
+					{ a[k] = aux[j++];}
+					else a[k] = aux[i++];
+				}
+
+			}
+
 		}
 	} 
 
@@ -233,11 +283,109 @@ public class Modelo {
 
 		int i = 0;
 		boolean encontrado = false;
-		while(i<comps.length && encontrado ==false){
+		Comparendo rta = null;
+		while(i<comps.darTamano() && encontrado ==false){
 
-			
+			if(comps.darElemento(i).LOCALIDAD.compareToIgnoreCase(Plocalidad)==0){
+				rta = comps.darElemento(i);
+				encontrado = true;
+
+			}
+			i++;
+
+		}
+
+		if(rta == null){
+			return "No existe un comparendo con la localidad dada";
+		}
+		else{
+			return "El primer comparendo encontrado con la localidad dada es: " + RetornarDatos(rta);
 		}
 	}
+
+	public Comparable[] requerimiento2EstudianteA(Date fechaHora){
+
+		int i = 0;
+
+		ArregloDinamico<Comparendo> arregloTemp = new ArregloDinamico<>(500000);
+
+		while(i<comps.darTamano()){
+			if(comps.darElemento(i).FECHA_HORA.compareTo(fechaHora)==0){
+
+				arregloTemp.agregar(comps.darElemento(i));
+			}
+			i++;
+		}
+
+		Comparable [] a = copiarArreglo(arregloTemp);
+		sortParaMerge(a, "descendente", null);
+
+		return a;
+
+	}
+
+	public String  requerimiento3EstudianteA(Date fecha1, Date fecha2){
+
+		Comparable [] a = copiarArreglo(comps);
+		String rta = ""; 
+		ComparadorXCodigoInfraccion b = new ComparadorXCodigoInfraccion();
+		sortParaMerge(a, "descendente", b);
+		int i = 0;
+		while(i <a.length ){
+
+			Comparendo temporal = cambiarDeComparableAComparendo(a[i]);
+			String infraccion = temporal.INFRACCION;
+			int numInfFecha1 = 0;
+			int numInfFecha2 = 0;
+			if(temporal.FECHA_HORA.compareTo(fecha1)==0){
+				numInfFecha1++;
+			}
+			if(temporal.FECHA_HORA.compareTo(fecha2)==0){
+				numInfFecha2++;
+			}
+
+			boolean continuar = true;
+			int j = i+1;
+			while(j<a.length &&  continuar == true){
+				Comparendo temporal2 = cambiarDeComparableAComparendo(a[j]);
+				if(temporal.INFRACCION.equalsIgnoreCase(temporal2.INFRACCION)){
+
+					if(temporal2.FECHA_HORA.compareTo(fecha1)==0){
+						numInfFecha1++;
+					}
+					if(temporal2.FECHA_HORA.compareTo(fecha2)==0){
+						numInfFecha2++;
+					}
+
+				}
+				else{
+					continuar = false;
+					i = j-1;
+				}
+				j++;
+
+			}
+			if(numInfFecha1 !=0 || numInfFecha2!=0){
+				rta += infraccion + "        | " + numInfFecha1 + "       | " + numInfFecha2 + "\n" ;
+			}
+			i++;
+		}
+
+		return rta;
+	}
+
+	public void agregarComparendosPorParametroAAregloDinamico(){
+
+
+	}
+
+	public static Comparendo cambiarDeComparableAComparendo(Comparable a){
+
+		Comparendo rta = (Comparendo) a;
+		return rta;
+	}
+
+
 
 }
 
