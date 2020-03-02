@@ -132,11 +132,69 @@ public class Controller {
 
 				break;
 
+			case 5:
+				// parte andrés
+				break;
+
+			case 6: 
+
+				// parte andrés
+				break;
+
+			case 7:
+
+				// parte andrés
+				break;			
+
+			case 8: 
+
+				// parte andrés
+
+
+				break;
+
+			case 9:
+
+				view.printMessage("Ingresa una fecha inicial con la siguiente forma: (2018/12/10)");
+				SimpleDateFormat parser2= new SimpleDateFormat("yyyy/MM/dd");
+				String fecha4 = lector.next();
+				view.printMessage("Ingresa una fecha final con la siguiente forma: (2018/12/10)");
+				String fecha5 = lector.next();
+				view.printMessage("Ingresa el numero de codigos de infraccion que deseas ver");
+				int numCods = lector.nextInt();
+
+				try {
+
+					Date fechaFinal4 = parser2.parse(fecha4);
+					Date fechaFinal5 = parser2.parse(fecha5);
+
+					view.printMessage("Ranking de las " + numCods+ " mayores infracciones del " + fecha4 + " al " + fecha5); 
+					view.printMessage("Infraccion | "+ "# Comparendos");
+					view.printMessage(modelo.requerimiento2C(fechaFinal4, fechaFinal5, numCods));
+
+				}
+
+
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+
+			case 10:
+
+				view.printMessage("Aproximación del número de comparendos por localidad.");
+				modelo.requerimiento3C();
+				int tam =modelo.darArreglo().darTamano();
+				System.out.println();
+				view.printMessage("Total comparendos: " + tam);
+				break;
+
 			default: 
 				view.printMessage("--------- \n Opcion Invalida !! \n---------");
 				break;
 			}
 		}
 
-	}	
+	}
+
 }

@@ -1,11 +1,16 @@
 package model.logic;
 
 import model.data_structures.ArregloDinamico;
+import model.data_structures.CodigoDeInfraccion;
 import model.data_structures.Comparendo;
+import model.data_structures.Comparendo.ComparadorXCodigoFecha;
 import model.data_structures.Comparendo.ComparadorXCodigoInfraccion;
+import model.data_structures.Comparendo.ComparadorXLocalidad;
 import model.data_structures.IArregloDinamico;
+import model.data_structures.Localidades;
 
 import java.util.Random;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -99,6 +104,20 @@ public class Modelo {
 		return rta;
 
 	}
+
+	public Comparable[] copiarArreglo2(IArregloDinamico<CodigoDeInfraccion> pComps){
+
+		Comparable[] rta = new Comparable[pComps.darTamano()];
+		int i = 0;
+		while(i < pComps.darTamano()){
+			rta[i] = pComps.darElemento(i);
+			i++;
+		}
+
+		return rta;
+
+	}
+
 
 	// solucion adaptada de las presentaciones de sicua
 	public void shellSort(Comparable datos[]){
@@ -374,11 +393,6 @@ public class Modelo {
 		return rta;
 	}
 
-	public void agregarComparendosPorParametroAAregloDinamico(){
-
-
-	}
-
 	public static Comparendo cambiarDeComparableAComparendo(Comparable a){
 
 		Comparendo rta = (Comparendo) a;
@@ -386,6 +400,194 @@ public class Modelo {
 	}
 
 
+	public String requerimiento2C(Date fecha1, Date fecha2, int numComparendos){
+
+		Comparable [] a = copiarArreglo(comps);
+		ComparadorXCodigoFecha b = new ComparadorXCodigoFecha();
+		sortParaMerge(a, "descendente", b);
+		String rta = "";
+
+		int i = 0;
+		int inicioArreglo = 0;
+		int finalArreglo = 0;
+		boolean terminar = false;
+
+		// este while determina la parte del arreglo que esta entre las fechas dadas por parametro
+		while(i <a.length && terminar == false ){
+
+			Comparendo temporal = cambiarDeComparableAComparendo(a[i]);
+			if(temporal.FECHA_HORA.compareTo(fecha1)>=0 && temporal.FECHA_HORA.compareTo(fecha2) <=0){
+				inicioArreglo = i;
+				int j = i+1;
+				boolean terminar2 = false;			
+
+				while(j<a.length && terminar2 ==false){
+
+					Comparendo temporal2 = cambiarDeComparableAComparendo(a[j]);
+					if(temporal2.FECHA_HORA.compareTo(fecha2)<=0){
+
+					}
+					else{
+						terminar2 = true;
+						terminar = true;
+						finalArreglo = j-1;
+					}
+					j++;
+				}
+
+			}
+
+			i++;
+
+		}
+
+		int tamanoNuevoComparable = (finalArreglo - inicioArreglo) +1;
+
+		Comparable[] nuevo = new Comparable[tamanoNuevoComparable];
+		int conteo = 0;
+
+		while(inicioArreglo <= finalArreglo ){
+
+			nuevo[conteo] = a[inicioArreglo];
+			inicioArreglo++;
+			conteo++;
+		}
+
+		sortParaMerge(nuevo, "descendente", null);
+
+		int k = 0;
+		IArregloDinamico<CodigoDeInfraccion> codigos = new ArregloDinamico<CodigoDeInfraccion>(10000);
+		while(k < nuevo.length ){
+
+			Comparendo cx = (Comparendo) nuevo[k];
+			String infrac = cx.INFRACCION;
+			int numComps = 1;
+			int l = k+1;
+			boolean continuar = true;
+
+			while(l < nuevo.length && continuar == true){
+				Comparendo cx1 = (Comparendo) nuevo[l];
+
+				if(cx1.INFRACCION.compareTo(infrac)==0){
+					numComps++;
+				}
+				else{
+					continuar = false;
+					k = l-1;
+				}
+				l++;
+			}
+
+			CodigoDeInfraccion newCod = new CodigoDeInfraccion(infrac, numComps);
+			codigos.agregar(newCod);
+
+			k++;
+		}
+
+		Comparable[] comparableFinal = copiarArreglo2(codigos);
+
+		sortParaMerge(comparableFinal, "Ascendente", null);
+
+		int i3 = 0;
+		while(i3 < numComparendos){
+
+			CodigoDeInfraccion respuesta = (CodigoDeInfraccion) comparableFinal[i3];
+
+			rta+= respuesta.darNombre() + "        | " + respuesta.darVecesRepite() + "\n";
+
+			i3++;
+		}
+		return rta;
+	}
+
+	public void requerimiento3C(){
+
+		ComparadorXLocalidad b = new ComparadorXLocalidad();
+		Comparable[] a = copiarArreglo(comps);
+
+		sortParaMerge(a, "Descendente", b);
+
+		int k = 0;
+		IArregloDinamico<Localidades> localidades = crearArregloConTodasLasLocalidades();
+
+		while(k < a.length ){
+
+			Comparendo cx = (Comparendo) a[k];
+			String localid = cx.LOCALIDAD;
+			int numComps = 1;
+			int l = k+1;
+			boolean continuar = true;
+
+			while(l < a.length && continuar == true){
+				Comparendo cx1 = (Comparendo) a[l];
+
+				if(cx1.LOCALIDAD.compareTo(localid)==0){
+					numComps++;
+				}
+				else{
+					continuar = false;
+					k = l-1;
+				}
+				l++;
+			}
+
+			Localidades newLoc = new Localidades(localid, numComps);
+			Localidades actual = localidades.buscar(newLoc);
+			if(actual!=null){
+				actual.cambiarNumVeces(numComps);
+			}
+
+			k++;
+		}
+
+		for(int j = 0; j<localidades.darTamano(); j++){
+
+			Localidades temporal = localidades.darElemento(j);
+			System.out.println(justificarA16Caracteres(temporal.darNombre())+"|" +temporal.retornarCadenaDeStrings());
+		}
+
+
+	}
+
+	public IArregloDinamico<Localidades> crearArregloConTodasLasLocalidades(){
+
+		IArregloDinamico<Localidades> localids = new ArregloDinamico<>(20);
+
+		localids.agregar(new Localidades("Antonio Nariño", 0));
+		localids.agregar(new Localidades("Barrios Unidos", 0));
+		localids.agregar(new Localidades("Bosa", 0));
+		localids.agregar(new Localidades("Candelaria", 0));
+		localids.agregar(new Localidades("Chapinero", 0));
+		localids.agregar(new Localidades("Ciudad Bolívar", 0));
+		localids.agregar(new Localidades("Engativa", 0));
+		localids.agregar(new Localidades("Fontibon", 0));
+		localids.agregar(new Localidades("Kennedy", 0));
+		localids.agregar(new Localidades("Martires", 0));
+		localids.agregar(new Localidades("Puente Aranda", 0));
+		localids.agregar(new Localidades("Rafael Uribe", 0));
+		localids.agregar(new Localidades("San Cristobal", 0));
+		localids.agregar(new Localidades("Santa Fe", 0));
+		localids.agregar(new Localidades("Suba", 0));
+		localids.agregar(new Localidades("Sumapaz", 0));
+		localids.agregar(new Localidades("Teusaquillo", 0));
+		localids.agregar(new Localidades("Tunjuelito", 0));
+		localids.agregar(new Localidades("Usaquen", 0));
+		localids.agregar(new Localidades("Usme", 0));
+
+		return localids;
+	}
+
+	public String justificarA16Caracteres(String nombre){
+
+		int numCaracteres = nombre.length();
+		String rta = nombre;
+
+		for(int i = numCaracteres; i<16; i++){
+
+			rta+="-";
+		}
+
+		return rta;
+	}
 
 }
-
