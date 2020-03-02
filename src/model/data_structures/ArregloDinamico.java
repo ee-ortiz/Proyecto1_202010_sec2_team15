@@ -104,5 +104,9 @@ public class ArregloDinamico<T extends Comparable<T>>  implements IArregloDinami
 		return rta;
 
 	}
+	public void cambiarVariable(int i, T dato)
+	{
+		elementos[i]= dato;
+	}
 
 }

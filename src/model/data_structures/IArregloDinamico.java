@@ -44,4 +44,5 @@ public interface IArregloDinamico<T extends Comparable<T>> {
 	 */
 	T eliminar( T dato );
 
+	public void cambiarVariable(int i, T dato);
 }

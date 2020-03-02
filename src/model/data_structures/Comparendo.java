@@ -38,4 +38,17 @@ public class Comparendo implements Comparable<Comparendo> {
 			return c1.INFRACCION.compareTo(c2.INFRACCION);
 		}
 	}
+	public static class ComparadorXCodigoFecha implements Comparator<Comparendo> {
+
+		public int compare(Comparendo c1, Comparendo c2) {
+			return c1.FECHA_HORA.compareTo(c2.FECHA_HORA);
+		}
+		
+	}
+	public static class ComparadorXCodigoLocalidad implements Comparator<Comparendo> {
+
+		public int compare(Comparendo c1, Comparendo c2) {
+			return c1.LOCALIDAD.compareTo(c2.LOCALIDAD);
+		}
+	}
 }
