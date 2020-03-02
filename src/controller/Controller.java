@@ -53,7 +53,7 @@ public class Controller {
 					modelo = new Modelo();
 
 					long start = System.currentTimeMillis();
-					String rta = modelo.cargar(PATH);
+					String rta = modelo.cargar(PATH2);
 					long end = System.currentTimeMillis();
 
 					view.printMessage("Tiempo de carga (s): " + (end-start)/1000.0);
