@@ -25,6 +25,7 @@ public class Controller {
 	private boolean cargado;
 	public static String PATH = "./data/comparendos_dei_2018_small.geojson";
 	public static String PATH2 = "./data/comparendos_dei_2018.geojson";
+	
 
 	/**
 	 * Crear la vista y el modelo del proyecto
@@ -133,21 +134,92 @@ public class Controller {
 				break;
 
 			case 5:
-				// parte andrés
+				view.printMessage("Ingresa el nombre de la infraccion");
+				String infraccion = lector.next();
+				view.printMessage(modelo.requerimiento1EstudianteB(infraccion));
 				break;
+				// parte andrés
+				
 
 			case 6: 
+				String rtas="";
+				view.printMessage("ingrese el nombre de la infraccion");
+				 infraccion = lector.next();
+
+				 try {
+
+						
+
+						Comparable [] a = modelo.requerimiento2EstudianteB(infraccion);
+
+						int i = 0;
+
+						if(a.length>0){
+							while(i<a.length){
+								Comparendo aMostar = (Comparendo) a[i];
+								rtas += "- " + modelo.RetornarDatos(aMostar) + "\n";
+								i++;
+							}
+							view.printMessage("El total de comparendos registrados en el archivo dada una INFRACCION es: " + a.length + "\n" );
+							view.printMessage(rtas);
+						}
+						else{
+							view.printMessage("No se encontraron comparendos con esa fecha en los archivos");
+						}
+					}
+
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 
 				// parte andrés
 				break;
 
 			case 7:
+				
+	
 
-				// parte andrés
+				try {
+
+				
+
+					view.printMessage("Infraccion | "+ "Particular" + " | " + "Público");
+					view.printMessage(modelo.requerimiento3EstudianteB("Particular", "Público"));
+
+				}
+
+
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				// parte| andrés
 				break;			
 
 			case 8: 
+				view.printMessage("Ingresa una fecha inicial con la siguiente forma: (2018/12/10)");
+				SimpleDateFormat parser5= new SimpleDateFormat("yyyy/MM/dd");
+				String fecha11 = lector.next();
+				view.printMessage("Ingresa una fecha final con la siguiente forma: (2018/12/10)");
+				String fecha12 = lector.next();
+				view.printMessage("Ingresa la localidad ");
+				String numCods = lector.next();
 
+				try {
+
+					Date fechaFinal11 = parser5.parse(fecha11);
+					Date fechaFinal12 = parser5.parse(fecha12);
+
+					view.printMessage("Ranking de las " + numCods+ " mayores infracciones del " + fecha11 + " al " + fecha12); 
+					view.printMessage("Infraccion | "+ "# Comparendos");
+					view.printMessage(modelo.requerimiento1Estudiantec(fechaFinal11, fechaFinal12, numCods));
+
+				}
+
+
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 				// parte andrés
 
 
@@ -161,16 +233,16 @@ public class Controller {
 				view.printMessage("Ingresa una fecha final con la siguiente forma: (2018/12/10)");
 				String fecha5 = lector.next();
 				view.printMessage("Ingresa el numero de codigos de infraccion que deseas ver");
-				int numCods = lector.nextInt();
+				int numCods1 = lector.nextInt();
 
 				try {
 
 					Date fechaFinal4 = parser2.parse(fecha4);
 					Date fechaFinal5 = parser2.parse(fecha5);
 
-					view.printMessage("Ranking de las " + numCods+ " mayores infracciones del " + fecha4 + " al " + fecha5); 
+					view.printMessage("Ranking de las " + numCods1+ " mayores infracciones del " + fecha4 + " al " + fecha5); 
 					view.printMessage("Infraccion | "+ "# Comparendos");
-					view.printMessage(modelo.requerimiento2C(fechaFinal4, fechaFinal5, numCods));
+					view.printMessage(modelo.requerimiento2C(fechaFinal4, fechaFinal5, numCods1));
 
 				}
 

@@ -79,6 +79,7 @@ public class Modelo {
 		return rta;
 	}
 
+	
 	public Comparable[ ] copiarComparendos(){
 
 		Comparable[] rta = new Comparable[comps.darTamano()];
@@ -398,7 +399,99 @@ public class Modelo {
 		Comparendo rta = (Comparendo) a;
 		return rta;
 	}
+	
+ public String  requerimiento1Estudiantec(Date pFecha1, Date pFecha2, String pLocalidad){
+		 
+		 ComparadorXLocalidad auxLocalidad= new ComparadorXLocalidad();
+		 Comparable[] a= copiarArreglo(comps);
+		 
+		 ComparadorXCodigoFecha aux= new ComparadorXCodigoFecha();
+		 Comparable[] b= copiarArreglo(comps);
+		 
+		 sortParaMerge(a, "descendente", auxLocalidad);
+		 
+		 
+		 //sortParaMerge(a, "ascendente", aux );
+		 int i = 0;
 
+			ArregloDinamico<Comparendo> arregloTemp = new ArregloDinamico<>(500000);
+
+			while(i<comps.darTamano()&& comps.darElemento(i).LOCALIDAD.compareTo(pLocalidad)<=0){
+				if(comps.darElemento(i).LOCALIDAD.compareTo(pLocalidad)==0){
+
+					arregloTemp.agregar(comps.darElemento(i));
+				}
+				i++;
+			}
+
+			Comparable [] arregloLocalidad = copiarArreglo(arregloTemp); // copio el arreglo con dicha localidad
+			
+			sortParaMerge(arregloLocalidad, "descendente", aux); //ordenarlo por fecha
+			int sa= 0;
+			ArregloDinamico <Comparendo> s= new ArregloDinamico<Comparendo>(arregloLocalidad.length);//arreglo de compa
+			while(arregloLocalidad.length>sa)
+			{
+				s= (ArregloDinamico)arregloLocalidad[sa];
+				sa++;
+			}
+			
+			int j=0;
+			arregloTemp = new ArregloDinamico<>(s.darTamano());
+			while(j<s.darTamano()&& s.darElemento(j).FECHA_HORA.compareTo(pFecha2)<=0 ){
+				if(s.darElemento(j).FECHA_HORA.compareTo(pFecha1)>=0&& s.darElemento(j).FECHA_HORA.compareTo(pFecha2)<=0){
+
+					arregloTemp.agregar(comps.darElemento(i));
+				}
+				j++;
+			}
+
+			 arregloLocalidad = copiarArreglo(arregloTemp); //arreglo con cierta localidad y entre cierto tiempo
+			 sortParaMerge(arregloLocalidad, "ascendente", null);// ordena por infraccion de manera ascendente
+			
+			sa= 0;
+			s=new ArregloDinamico<Comparendo>(arregloLocalidad.length);//arreglo de compa
+			while(arregloLocalidad.length>sa)
+			{
+				s= (ArregloDinamico)arregloLocalidad[sa];
+				sa++;
+			}
+			int contador=0;
+			String variable=null;
+			int k=0;
+			String rta = ""; 
+			while (s.darTamano()>k && s.darElemento(k)!=null)
+			{
+				if(variable.equals(s.darElemento(k).INFRACCION))
+				{
+					contador ++;
+					k++;
+				}
+				else {
+					if(contador==0)
+					{
+						contador++;
+						variable= s.darElemento(k).INFRACCION;
+						k++;
+					}
+					else{
+					rta+= variable + "        | " + contador + "\n" ;
+					variable = s.darElemento(k).INFRACCION;
+					contador=0;
+					contador++;
+					k++;
+					}
+				}
+				
+				
+			
+				
+			}
+			rta+= s.darElemento(k).INFRACCION + "        | " + contador + "\n" ;
+			return rta;
+			//s es un arreglo dinamico con los datos ya ordenados por cierta fecha y localidad
+			
+	 }
+	 
 
 	public String requerimiento2C(Date fecha1, Date fecha2, int numComparendos){
 
@@ -589,5 +682,173 @@ public class Modelo {
 
 		return rta;
 	}
+	
+	public  void sortParaMergeInfraccion()
+	 {
+		 IArregloDinamico<Comparendo> aux = new ArregloDinamico<Comparendo>(6000000);
+	 sortParaMergeSortFecha(comps, aux, 0, comps.darTamano() -1);
+	 }
+	 
+	 private  void sortParaMergeSortInfraccion(IArregloDinamico<Comparendo> comps2, IArregloDinamico<Comparendo> aux, int lo, int hi)
+	 {
+	 if (hi <= lo) return;
+	 int mid = lo + (hi - lo) / 2;
+	 sortParaMergeSortInfraccion(comps2, aux, lo, mid);
+	 sortParaMergeSortInfraccion(comps2, aux, mid+1, hi);
+	 mergeInfraccion(comps2, aux, lo, mid, hi);
+	 }
+	 
+	 private  void mergeInfraccion(IArregloDinamico<Comparendo> a, IArregloDinamico<Comparendo> aux, int lo, int mid, int hi)
+	 {
+	  for (int k = lo; k <= hi; k++)
+	  aux.cambiarVariable( k,a.darElemento(k));   //aux[k] = a[k];
+	  int i = lo, j = mid+1;
+	  for (int k = lo; k <= hi; k++)
+	  	{
+	  if (i > mid)a.cambiarVariable( k,aux.darElemento(j++));   //a[k] = aux[j++];
+	  else if (j > hi) a.cambiarVariable( k,aux.darElemento(i++));//a[k] = aux[i++];
+	  else if (aux.darElemento(j).INFRACCION.compareTo(aux.darElemento(i).INFRACCION)<0 && aux.darElemento(j)!=null && aux.darElemento(i)!= null)  //(less(aux[j], aux[i])) //si izquierda menor true
+	  	{ a.cambiarVariable( k,aux.darElemento(j++));//a[k] = aux[j++];
+	  	}
+	  else  a.cambiarVariable( k,aux.darElemento(i++));  //a[k] = aux[i++];
+	  	}
+	 } 
+	 
+	 
+	 
+	 /*
+	  * merge sort por fecha
+	  */
+	 public  void sortParaMergeFecha(IArregloDinamico<Comparendo> pArregloFecha)
+	 {
+		 IArregloDinamico<Comparendo> aux = new ArregloDinamico<Comparendo>(6000000);
+	 sortParaMergeSortInfraccion(pArregloFecha, aux, 0, comps.darTamano() -1);
+	 }
+	 /*
+	  * merge sort por fecha
+	  */
+	 private  void sortParaMergeSortFecha(IArregloDinamico<Comparendo> comps2, IArregloDinamico<Comparendo> aux, int lo, int hi)
+	 {
+	 if (hi <= lo) return;
+	 int mid = lo + (hi - lo) / 2;
+	 sortParaMergeSortFecha(comps2, aux, lo, mid);
+	 sortParaMergeSortFecha(comps2, aux, mid+1, hi);
+	 mergeFecha(comps2, aux, lo, mid, hi);
+	 }
+	 /*
+	  * merge sort por fecha
+	  */
+	 private  void mergeFecha(IArregloDinamico<Comparendo> a, IArregloDinamico<Comparendo> aux, int lo, int mid, int hi)
+	 {
+	  for (int k = lo; k <= hi; k++)
+	  aux.cambiarVariable( k,a.darElemento(k));   //aux[k] = a[k];
+	  int i = lo, j = mid+1;
+	  for (int k = lo; k <= hi; k++)
+	  	{
+	  if (i > mid)a.cambiarVariable( k,aux.darElemento(j++));   //a[k] = aux[j++];
+	  else if (j > hi) a.cambiarVariable( k,aux.darElemento(i++));//a[k] = aux[i++];
+	  else if (aux.darElemento(j).FECHA_HORA.compareTo(aux.darElemento(i).FECHA_HORA)<0)  //(less(aux[j], aux[i])) //si izquierda menor true
+	  	{ a.cambiarVariable( k,aux.darElemento(j++));//a[k] = aux[j++];
+	  	}
+	  else  a.cambiarVariable( k,aux.darElemento(i++));  //a[k] = aux[i++];
+	  	}
+	 }
+	 
+	 public String requerimiento1EstudianteB(String pInfraccion ){
+
+			int i = 0;
+			boolean encontrado = false;
+			Comparendo rta = null;
+			while(i<comps.darTamano() && encontrado ==false){
+
+				if(comps.darElemento(i).INFRACCION.compareToIgnoreCase(pInfraccion)==0){
+					rta = comps.darElemento(i);
+					encontrado = true;
+
+				}
+				i++;
+
+			}
+
+			if(rta == null){
+				return "No existe un comparendo con la Infraccion dada";
+			}
+			else{
+				return "El primer comparendo encontrado con la Infraccion dada es: " + RetornarDatos(rta);
+			}
+		}
+	 /*
+	  * requerimiento 2 devuelve un arreglo ordenado para luego mostrarlo en controller
+	  */
+	 public Comparable[] requerimiento2EstudianteB (String pInfraccion)
+	 {
+		 int i = 0;
+
+			ArregloDinamico<Comparendo> arregloTemp = new ArregloDinamico<>(500000);
+
+			while(i<comps.darTamano()){
+				if(comps.darElemento(i).INFRACCION.compareTo(pInfraccion)==0){
+
+					arregloTemp.agregar(comps.darElemento(i));
+				}
+				i++;
+			}
+
+			Comparable [] a = copiarArreglo(arregloTemp);
+			sortParaMerge(a, "descendente", null);
+			return a;
+			
+			
+	 }
+	 
+	 public String  requerimiento3EstudianteB(String pTipoServicio, String pTipoServicio2){
+
+			Comparable [] a = copiarArreglo(comps);
+			String rta = ""; 
+			ComparadorXCodigoInfraccion b = new ComparadorXCodigoInfraccion();
+			sortParaMerge(a, "descendente", b);
+			int i = 0;
+			while(i <a.length ){
+
+				Comparendo temporal = cambiarDeComparableAComparendo(a[i]);
+				String infraccion = temporal.INFRACCION;
+				int numServicioParticulares = 0;
+				int numServicioPublicos= 0;
+				if(temporal.TIPO_SERVI.compareTo(pTipoServicio)==0){
+					numServicioParticulares++;
+				}
+				if(temporal.TIPO_SERVI.compareTo(pTipoServicio2)==0){
+					numServicioPublicos++;
+				}
+
+				boolean continuar = true;
+				int j = i+1;
+				while(j<a.length &&  continuar == true){
+					Comparendo temporal2 = cambiarDeComparableAComparendo(a[j]);
+					if(temporal.INFRACCION.equalsIgnoreCase(temporal2.INFRACCION)){
+
+						if(temporal2.TIPO_SERVI.compareTo(pTipoServicio)==0){
+							numServicioParticulares++;
+						}
+						if(temporal2.TIPO_SERVI.compareTo(pTipoServicio2)==0){
+							numServicioPublicos++;
+						}
+
+					}
+					else{
+						continuar = false;
+						i = j-1;
+					}
+					j++;
+
+				}
+				if(numServicioParticulares !=0 || numServicioPublicos!=0){
+					rta += infraccion + "        | " + numServicioParticulares + "               | " + numServicioPublicos + "\n" ;
+				}
+				i++;
+			}
+
+			return rta;
+		}
 
 }

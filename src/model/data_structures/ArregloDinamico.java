@@ -34,6 +34,8 @@ public class ArregloDinamico<T extends Comparable<T>>  implements IArregloDinami
 
 	public void agregar( T dato )
 	{
+		
+	
 		if ( tamanoAct == tamanoMax )
 		{  // caso de arreglo lleno (aumentar tamaNo)
 
@@ -104,5 +106,10 @@ public class ArregloDinamico<T extends Comparable<T>>  implements IArregloDinami
 		return rta;
 
 	}
+	public void cambiarVariable(int i, T dato)
+	{
+		elementos[i]= dato;
+	}
+
 
 }

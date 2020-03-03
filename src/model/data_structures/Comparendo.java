@@ -52,7 +52,7 @@ public class Comparendo implements Comparable<Comparendo> {
 			return c1.LOCALIDAD.compareTo(c2.LOCALIDAD);
 		}
 	}
-
+	
 
 
 }
